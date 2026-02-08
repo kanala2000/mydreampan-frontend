@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agent ID Request | MyDream PAN</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="form-box">
+  <span class="back" onclick="goBack()">← Back</span>
+
+  <h2>Agent ID Request</h2>
+
+  <form id="agentRequestForm">
+    <input id="name" placeholder="Full Name" required>
+
+    <!-- 🔒 MOBILE AUTO FILLED -->
+    <input id="mobile" placeholder="Mobile Number" readonly>
+
+    <input id="email" type="email" placeholder="Email" required>
+
+    <p><b>Registration Fee: ₹100</b></p>
+
+    <button type="submit">Submit Request</button>
+  </form>
+</div>
+
+<script>
+/* ================= LOGIN CHECK ================= */
+if (localStorage.getItem("agentLoggedIn") !== "true") {
+  alert("Please login to continue");
+  window.location.href = "/agent-login.html?next=request";
+}
+
+/* ================= AUTO FILL MOBILE ================= */
+const agentMobile = localStorage.getItem("agentMobile");
+
+if (!agentMobile) {
+  alert("Session expired. Please login again.");
+  localStorage.clear();
+  window.location.href = "/agent-login.html?next=request";
+}
+
+document.getElementById("mobile").value = agentMobile;
+
+/* ================= BACK ================= */
+function goBack(){
+  window.location.href = "/agent-options.html";
+}
+
+/* ================= SUBMIT ================= */
+document.getElementById("agentRequestForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const payload = {
+    name: document.getElementById("name").value.trim(),
+    mobile: agentMobile,
+    email: document.getElementById("email").value.trim(),
+    status: "Pending"
+  };
+
+  try {
+    const res = await fetch("/api/agent-request", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert(
+        "✅ Agent ID Request Submitted Successfully!\n\n" +
+        "⏳ Please wait for admin approval.\n" +
+        "📌 You can check status in Agent Dashboard."
+      );
+      window.location.href = "/agent-dashboard.html";
+    } else {
+      alert("❌ Submission failed. Try again.");
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Server error. Try again later.");
+  }
+});
+</script>
+
+</body>
+</html>

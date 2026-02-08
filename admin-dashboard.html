@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard | MyDream PAN</title>
+
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <style>
+    body {
+      background: #f4f6f8;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h3 {
+      margin-top: 40px;
+      color: #0b1f3a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: #6a2dbf;
+      color: #fff;
+    }
+
+    select {
+      padding: 6px;
+    }
+
+    button {
+      padding: 6px 12px;
+      background: #0b1f3a;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .logout {
+      float: right;
+      color: #6a2dbf;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <div class="logo">MY DREAM PAN – ADMIN</div>
+  <nav>
+    <span class="logout" onclick="logoutAdmin()">Logout</span>
+  </nav>
+</header>
+
+<div class="container">
+
+  <h2>Admin Dashboard</h2>
+
+  <!-- ================= NEW PAN ================= -->
+  <h3>New PAN Applications</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Application ID</th>
+        <th>Mobile</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody id="newPanTable"></tbody>
+  </table>
+
+  <!-- ================= PAN CORRECTION ================= -->
+  <h3>PAN Correction Applications</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Application ID</th>
+        <th>Mobile</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody id="correctionTable"></tbody>
+  </table>
+
+  <!-- ================= AGENT REQUESTS ================= -->
+  <h3>Agent ID Requests</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Mobile</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody id="agentTable"></tbody>
+  </table>
+
+</div>
+
+<script>
+/* ================= ADMIN LOGIN CHECK ================= */
+if (!localStorage.getItem("adminLoggedIn")) {
+  alert("Admin login required");
+  window.location.href = "/admin-login.html";
+}
+
+function logoutAdmin() {
+  localStorage.removeItem("adminLoggedIn");
+  window.location.href = "/admin-login.html";
+}
+
+/* ================= NEW PAN ================= */
+fetch("/api/admin/new-pan")
+  .then(res => res.json())
+  .then(data => {
+    const table = document.getElementById("newPanTable");
+    table.innerHTML = "";
+
+    if (data.length === 0) {
+      table.innerHTML = `<tr><td colspan="5">No applications</td></tr>`;
+      return;
+    }
+
+    data.forEach(app => {
+      table.innerHTML += `
+        <tr>
+          <td>${app._id}</td>
+          <td>${app.mobile}</td>
+          <td>${new Date(app.createdAt).toLocaleString()}</td>
+          <td>
+            <select id="newpan-${app._id}">
+              <option ${app.status==="Submitted"?"selected":""}>Submitted</option>
+              <option ${app.status==="Processing"?"selected":""}>Processing</option>
+              <option ${app.status==="Ready"?"selected":""}>Ready</option>
+            </select>
+          </td>
+          <td>
+            <button onclick="updateNewPan('${app._id}')">Save</button>
+          </td>
+        </tr>
+      `;
+    });
+  });
+
+function updateNewPan(id) {
+  const status = document.getElementById(`newpan-${id}`).value;
+
+  fetch(`/api/admin/new-pan/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
+  }).then(() => alert("New PAN status updated"));
+}
+
+/* ================= PAN CORRECTION ================= */
+fetch("/api/admin/pan-correction")
+  .then(res => res.json())
+  .then(data => {
+    const table = document.getElementById("correctionTable");
+    table.innerHTML = "";
+
+    if (data.length === 0) {
+      table.innerHTML = `<tr><td colspan="5">No applications</td></tr>`;
+      return;
+    }
+
+    data.forEach(app => {
+      table.innerHTML += `
+        <tr>
+          <td>${app._id}</td>
+          <td>${app.mobile}</td>
+          <td>${new Date(app.createdAt).toLocaleString()}</td>
+          <td>
+            <select id="corr-${app._id}">
+              <option ${app.status==="Submitted"?"selected":""}>Submitted</option>
+              <option ${app.status==="Processing"?"selected":""}>Processing</option>
+              <option ${app.status==="Ready"?"selected":""}>Ready</option>
+            </select>
+          </td>
+          <td>
+            <button onclick="updateCorrection('${app._id}')">Save</button>
+          </td>
+        </tr>
+      `;
+    });
+  });
+
+function updateCorrection(id) {
+  const status = document.getElementById(`corr-${id}`).value;
+
+  fetch(`/api/admin/pan-correction/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
+  }).then(() => alert("Correction status updated"));
+}
+
+/* ================= AGENT REQUESTS ================= */
+fetch("/api/admin/agent-requests")
+  .then(res => res.json())
+  .then(data => {
+    const table = document.getElementById("agentTable");
+    table.innerHTML = "";
+
+    if (data.length === 0) {
+      table.innerHTML = `<tr><td colspan="5">No requests</td></tr>`;
+      return;
+    }
+
+    data.forEach(agent => {
+      table.innerHTML += `
+        <tr>
+          <td>${agent.name}</td>
+          <td>${agent.mobile}</td>
+          <td>${agent.email}</td>
+          <td>${agent.status}</td>
+          <td>
+            ${
+              agent.status === "Pending"
+              ? `<button onclick="approveAgent('${agent._id}')">Approve</button>`
+              : `ID: ${agent.agentID || "-"}`
+            }
+          </td>
+        </tr>
+      `;
+    });
+  });
+
+/* ================= APPROVE AGENT ================= */
+function approveAgent(id) {
+  fetch(`/api/admin/agent-requests/${id}/approve`, {
+    method: "PUT"
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (!data.success) {
+      alert("Approval failed");
+      return;
+    }
+
+    alert(
+      "✅ Agent Approved!\n\n" +
+      "Agent ID: " + data.agentID + "\n" +
+      "Password: " + data.password
+    );
+
+    location.reload();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Server error");
+  });
+}
+</script>
+
+</body>
+</html>

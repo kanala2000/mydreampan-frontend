@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>New PAN Application | MyDream PAN</title>
+
+  <link rel="stylesheet" href="/css/style.css" />
+  <script defer src="/js/main.js"></script>
+
+  <style>
+    .container {
+      max-width: 650px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; margin-bottom: 20px; }
+    .back-btn {
+      color: #6a2dbf; font-weight: bold; cursor: pointer;
+      margin-bottom: 15px; display: inline-block;
+    }
+    label { font-weight: 600; margin-top: 12px; display: block; }
+    input, select {
+      width: 100%; padding: 10px; margin-top: 6px;
+      border-radius: 6px; border: 1px solid #ccc;
+    }
+    small { color: #777; }
+
+    .pay-box {
+      margin-top: 25px;
+      padding: 15px;
+      border: 1px dashed #6a2dbf;
+      border-radius: 8px;
+      background: #f6f3ff;
+    }
+    .upi {
+      font-weight: bold;
+      font-size: 16px;
+      margin: 8px 0;
+      color: #0b1f3a;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 25px;
+      padding: 12px;
+      background: #6a2dbf;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .submit-btn:hover { background: #5823a3; }
+
+    footer {
+      margin-top: 60px;
+      background: #0b1f3a;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+    }
+    footer a { color: #fff; text-decoration: underline; }
+  </style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <div class="logo">MY DREAM PAN</div>
+  <nav>
+    <a href="/index.html">Home</a>
+    <a href="/services.html">Services</a>
+    <a href="/customer-login.html">Customer</a>
+    <a href="/agent-options.html">Agent</a>
+    <a href="/admin-login.html">Admin</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <span class="back-btn" onclick="goBack()">← Back</span>
+  <h2>New PAN Application</h2>
+
+  <form id="panNewForm">
+
+    <label>Full Name</label>
+    <input type="text" id="name" required />
+
+    <label>Father Name</label>
+    <input type="text" id="father" required />
+
+    <label>Mobile Number</label>
+    <input type="tel" id="mobile" pattern="[0-9]{10}" required />
+
+    <label>Email</label>
+    <input type="email" id="email" required />
+
+    <label>Aadhaar Card Upload</label>
+    <input type="file" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required />
+    <small>Max size: 5MB</small>
+
+    <label>Photo Upload</label>
+    <input type="file" class="file-input" accept=".jpg,.jpeg,.png" required />
+    <small>Max size: 5MB</small>
+
+    <label>Signature Upload</label>
+    <input type="file" class="file-input" accept=".jpg,.jpeg,.png" required />
+    <small>Max size: 5MB</small>
+
+    <label>PAN Type</label>
+    <select id="panType" required>
+      <option value="">-- Select --</option>
+      <option value="Digital PAN – ₹200">Digital PAN – ₹200</option>
+      <option value="Physical PAN – ₹250">Physical PAN – ₹250</option>
+    </select>
+
+    <!-- PAYMENT -->
+    <div class="pay-box">
+      <h3>Payment Details</h3>
+      <p><b>Pay via UPI (Manual)</b></p>
+      <div class="upi">UPI ID: kanala2000@ybl</div>
+
+      <label>
+        <input type="checkbox" id="paymentDone" />
+        I have completed the payment
+      </label>
+    </div>
+
+    <button type="submit" class="submit-btn">
+      Pay & Submit
+    </button>
+
+  </form>
+</div>
+
+<footer>
+  © 2026 MyDream PAN |
+  <a href="/privacy.html">Privacy Policy</a>
+</footer>
+
+<script>
+/* LOGIN CHECK */
+if (!localStorage.getItem("customerLoggedIn")) {
+  alert("Please login as Customer to apply for PAN");
+  window.location.href = "/customer-login.html";
+}
+
+function goBack() {
+  window.location.href = "/services.html";
+}
+
+/* FILE SIZE VALIDATION */
+const MAX_SIZE = 5 * 1024 * 1024;
+function validateFiles() {
+  const files = document.querySelectorAll(".file-input");
+  for (let f of files) {
+    if (f.files[0].size > MAX_SIZE) {
+      alert("Each file must be less than 5MB");
+      return false;
+    }
+  }
+  return true;
+}
+
+/* SUBMIT → BACKEND */
+document.getElementById("panNewForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  if (!validateFiles()) return;
+
+  if (!document.getElementById("paymentDone").checked) {
+    alert("Please complete payment before submitting");
+    return;
+  }
+
+  const data = {
+    name: document.getElementById("name").value,
+    father: document.getElementById("father").value,
+    mobile: document.getElementById("mobile").value,
+    email: document.getElementById("email").value,
+    panType: document.getElementById("panType").value,
+    payment: "UPI - kanala2000@ybl",
+    status: "Submitted"
+  };
+
+  try {
+    const res = await fetch("/api/new-pan", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      alert(
+        "Payment received & New PAN submitted!\n\n" +
+        "Application ID: " + result.applicationId +
+        "\n\nTrack status in Customer Dashboard"
+      );
+
+      window.location.href = "/customer-dashboard.html";
+    } else {
+      alert("Submission failed. Try again.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error. Please try later.");
+  }
+});
+</script>
+
+</body>
+</html>

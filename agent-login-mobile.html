@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agent Login | MyDream PAN</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="form-box">
+  <span class="back" onclick="location.href='/agent-options.html'">← Back</span>
+
+  <h2>Agent Login</h2>
+
+  <div id="step1">
+    <input id="mobile" placeholder="Enter Mobile Number">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="result" style="display:none;"></div>
+</div>
+
+<script>
+async function login() {
+  const mobile = document.getElementById("mobile").value;
+
+  if (mobile.length !== 10) {
+    alert("Enter valid mobile number");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/agent/status/${mobile}`);
+    const data = await res.json();
+
+    if (!data || !data.status) {
+      alert("No agent request found for this mobile");
+      return;
+    }
+
+    document.getElementById("step1").style.display = "none";
+    const box = document.getElementById("result");
+    box.style.display = "block";
+
+    if (data.status === "Pending") {
+      box.innerHTML = `
+        <h3>Status: Pending</h3>
+        <p>Your request is under review.</p>
+      `;
+    } else if (data.status === "Approved") {
+      box.innerHTML = `
+        <h3>Status: Approved ✅</h3>
+        <p><b>Agent ID:</b> ${data.agentId}</p>
+        <p><b>Password:</b> ${data.password}</p>
+        <p>Use these details to login in PAN Support app.</p>
+      `;
+    }
+  } catch (err) {
+    alert("Server error");
+    console.error(err);
+  }
+}
+</script>
+
+</body>
+</html>

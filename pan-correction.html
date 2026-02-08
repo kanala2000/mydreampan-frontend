@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PAN Correction | MyDream PAN</title>
+
+  <link rel="stylesheet" href="/css/style.css" />
+  <script defer src="/js/main.js"></script>
+
+  <style>
+    .container {
+      max-width: 650px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; margin-bottom: 20px; }
+    .back-btn {
+      color: #6a2dbf; font-weight: bold; cursor: pointer;
+      margin-bottom: 15px; display: inline-block;
+    }
+    label { font-weight: 600; margin-top: 12px; display: block; }
+    input[type="text"], input[type="date"] {
+      width: 100%; padding: 10px; margin-top: 6px;
+      border-radius: 6px; border: 1px solid #ccc;
+    }
+    .checkbox-group { margin-top: 10px; }
+    .checkbox-group label { font-weight: normal; display: block; margin-top: 5px; }
+    input[type="file"] { margin-top: 6px; }
+    small { color: #777; }
+
+    .pay-box {
+      margin-top: 25px;
+      padding: 15px;
+      border: 1px dashed #6a2dbf;
+      border-radius: 8px;
+      background: #f6f3ff;
+    }
+
+    .upi {
+      font-weight: bold;
+      font-size: 16px;
+      color: #0b1f3a;
+      margin: 10px 0;
+    }
+
+    .submit-btn {
+      width: 100%; margin-top: 25px; padding: 12px;
+      background: #6a2dbf; color: #fff; border: none;
+      border-radius: 8px; font-size: 16px; cursor: pointer;
+    }
+    .submit-btn:hover { background: #5823a3; }
+
+    footer {
+      margin-top: 60px; background: #0b1f3a; color: #fff;
+      text-align: center; padding: 15px;
+    }
+    footer a { color: #fff; text-decoration: underline; }
+  </style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <div class="logo">MY DREAM PAN</div>
+  <nav>
+    <a href="/index.html">Home</a>
+    <a href="/services.html">Services</a>
+    <a href="/customer-login.html">Customer</a>
+    <a href="/agent-options.html">Agent</a>
+    <a href="/admin-login.html">Admin</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <span class="back-btn" onclick="goBack()">← Back</span>
+
+  <h2>PAN Correction Application</h2>
+
+  <form id="panCorrectionForm">
+
+    <!-- BASIC DETAILS -->
+    <label>PAN Number</label>
+    <input type="text" required />
+
+    <label>Full Name (as per PAN)</label>
+    <input type="text" />
+
+    <label>Father Name</label>
+    <input type="text" />
+
+    <label>Date of Birth</label>
+    <input type="date" />
+
+    <!-- ✅ ADDED : MOBILE NUMBER -->
+    <label>Mobile Number</label>
+    <input type="text" id="mobile" required />
+
+    <!-- CORRECTIONS -->
+    <label>Corrections Required</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox"> Name</label>
+      <label><input type="checkbox"> Father Name</label>
+      <label><input type="checkbox"> DOB</label>
+      <label><input type="checkbox"> Photo</label>
+      <label><input type="checkbox"> Signature</label>
+      <label><input type="checkbox"> Aadhaar</label>
+    </div>
+
+    <!-- UPLOADS -->
+    <label>Old PAN Card Upload</label>
+    <input type="file" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required />
+    <small>Max size: 5MB</small>
+
+    <label>Photo Upload</label>
+    <input type="file" class="file-input" accept=".jpg,.jpeg,.png" required />
+    <small>Max size: 5MB</small>
+
+    <label>Aadhaar Card Upload</label>
+    <input type="file" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required />
+    <small>Max size: 5MB</small>
+
+    <label>Signature Upload</label>
+    <input type="file" class="file-input" accept=".jpg,.jpeg,.png" required />
+    <small>Max size: 5MB</small>
+
+    <!-- PAYMENT -->
+    <div class="pay-box">
+      <h3>Payment Details</h3>
+      <p><b>Correction Fee:</b> ₹200</p>
+
+      <p>Pay via UPI (Manual)</p>
+      <div class="upi">UPI ID: kanala2000@ybl</div>
+
+      <label>
+        <input type="checkbox" id="paymentDone" />
+        I have completed the payment
+      </label>
+    </div>
+
+    <button type="submit" class="submit-btn">
+      Pay & Submit
+    </button>
+
+  </form>
+</div>
+
+<footer>
+  © 2026 MyDream PAN |
+  <a href="/privacy.html">Privacy Policy</a>
+</footer>
+
+<script>
+  // ===== CUSTOMER LOGIN CHECK =====
+  if (!localStorage.getItem("customerLoggedIn")) {
+    alert("Please login as Customer to continue");
+    window.location.href = "/customer-login.html";
+  }
+
+  function goBack() {
+    window.location.href = "/services.html";
+  }
+
+  const MAX_SIZE = 5 * 1024 * 1024;
+
+  function validateFiles() {
+    const files = document.querySelectorAll(".file-input");
+    for (let f of files) {
+      if (f.files.length === 0) {
+        alert("Please upload all required documents");
+        return false;
+      }
+      if (f.files[0].size > MAX_SIZE) {
+        alert("Each file must be 5MB or less");
+        f.value = "";
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // ===== SUBMIT HANDLER (UPDATED – DB + LOCAL SAFE) =====
+  document.getElementById("panCorrectionForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    if (!validateFiles()) return;
+
+    if (!document.getElementById("paymentDone").checked) {
+      alert("Please complete payment before submitting");
+      return;
+    }
+
+    const mobile = document.getElementById("mobile").value;
+    const appId = "CORR" + Date.now();
+
+    /* ---------- LOCAL STORAGE (OLD – KEEPING) ---------- */
+    let correctionRequests =
+      JSON.parse(localStorage.getItem("panCorrectionRequests")) || [];
+
+    correctionRequests.push({
+      id: appId,
+      mobile: mobile,
+      type: "PAN Correction",
+      status: "Submitted",
+      payment: "UPI - kanala2000@ybl",
+      date: new Date().toLocaleString()
+    });
+
+    localStorage.setItem(
+      "panCorrectionRequests",
+      JSON.stringify(correctionRequests)
+    );
+
+    /* ---------- DATABASE (NEW – ADD ONLY) ---------- */
+    try {
+      const res = await fetch("/api/pan-correction", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile: mobile,
+          status: "Submitted",
+          payment: "UPI - kanala2000@ybl"
+        })
+      });
+
+      const result = await res.json();
+
+      if (!result.success) {
+        alert("Saved locally but DB error occurred");
+      }
+
+    } catch (err) {
+      alert("Network error – saved locally");
+    }
+
+    alert(
+      "Payment received & PAN Correction submitted!\n\n" +
+      "Application ID: " + appId +
+      "\n\nYou can track this in Customer Dashboard."
+    );
+
+    window.location.href = "/customer-dashboard.html";
+  });
+</script>
+
+</body>
+</html>

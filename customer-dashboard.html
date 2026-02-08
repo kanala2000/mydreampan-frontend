@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Applications | MyDream PAN</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    body {
+      background:#f4f6f8;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .top-bar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+
+    .back-btn {
+      color:#6a2dbf;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .logout-btn {
+      padding:6px 12px;
+      background:#6a2dbf;
+      color:#fff;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    h2 {
+      text-align:center;
+      margin-bottom:30px;
+    }
+
+    h3 {
+      margin-top:30px;
+      color:#0b1f3a;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      margin-top:15px;
+    }
+
+    th, td {
+      border:1px solid #ddd;
+      padding:10px;
+      text-align:center;
+    }
+
+    th {
+      background:#6a2dbf;
+      color:#fff;
+    }
+
+    .status {
+      padding:4px 10px;
+      border-radius:6px;
+      font-weight:bold;
+      font-size:14px;
+    }
+
+    .Submitted { background:#ffeeba; }
+    .Processing { background:#cce5ff; }
+    .Ready { background:#d4edda; }
+
+    footer {
+      margin-top:60px;
+      background:#0b1f3a;
+      color:#fff;
+      text-align:center;
+      padding:15px;
+    }
+    footer a { color:#fff; text-decoration:underline; }
+  </style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <div class="logo">MY DREAM PAN</div>
+  <nav>
+    <a href="/index.html">Home</a>
+    <a href="/services.html">Services</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <div class="top-bar">
+    <span class="back-btn" onclick="goBack()">← Back</span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <h2>My Applications</h2>
+
+  <!-- NEW PAN -->
+  <h3>New PAN Applications</h3>
+  <table>
+    <tr>
+      <th>Application ID</th>
+      <th>Status</th>
+    </tr>
+    <tbody id="newPan"></tbody>
+  </table>
+
+  <!-- PAN CORRECTION -->
+  <h3>PAN Correction Applications</h3>
+  <table>
+    <tr>
+      <th>Application ID</th>
+      <th>Status</th>
+    </tr>
+    <tbody id="corr"></tbody>
+  </table>
+
+</div>
+
+<footer>
+  © 2026 MyDream PAN |
+  <a href="/privacy.html">Privacy Policy</a>
+</footer>
+
+<script>
+if (!localStorage.getItem("customerLoggedIn")) {
+  alert("Please login to view your applications");
+  window.location.href = "/customer-login.html";
+}
+
+const mobile = localStorage.getItem("loginMobile");
+
+const newPanTable = document.getElementById("newPan");
+const corrTable = document.getElementById("corr");
+
+async function loadApplications() {
+  try {
+    console.log("Fetching for mobile:", mobile);
+
+    const res = await fetch(`/api/customer/applications/${mobile}`);
+    const data = await res.json();
+
+    /* NEW PAN */
+    newPanTable.innerHTML = "";
+    if (!data.newPan || data.newPan.length === 0) {
+      newPanTable.innerHTML = `<tr><td colspan="2">No applications found</td></tr>`;
+    } else {
+      data.newPan.forEach(app => {
+        newPanTable.innerHTML += `
+          <tr>
+            <td>${app._id}</td>
+            <td><span class="status ${app.status}">${app.status}</span></td>
+          </tr>`;
+      });
+    }
+
+    /* CORRECTION */
+    corrTable.innerHTML = "";
+    if (!data.correction || data.correction.length === 0) {
+      corrTable.innerHTML = `<tr><td colspan="2">No applications found</td></tr>`;
+    } else {
+      data.correction.forEach(app => {
+        corrTable.innerHTML += `
+          <tr>
+            <td>${app._id}</td>
+            <td><span class="status ${app.status}">${app.status}</span></td>
+          </tr>`;
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load applications");
+  }
+}
+
+loadApplications();
+</script>
+
+</body>
+</html>

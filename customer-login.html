@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Customer Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="form-box">
+  <span class="back" onclick="location.href='/'">← Back</span>
+
+  <h2>Customer Login</h2>
+
+  <div id="step1">
+    <input id="mobile" placeholder="Mobile Number">
+    <button onclick="sendOTP()">Send OTP</button>
+  </div>
+
+  <div id="step2" style="display:none;">
+    <input id="otp" placeholder="Enter OTP">
+    <button onclick="verifyOTP()">Verify</button>
+  </div>
+</div>
+
+<script>
+function sendOTP() {
+  const m = mobile.value.trim();
+
+  if (m.length !== 10) {
+    alert("Invalid mobile number");
+    return;
+  }
+
+  // ✅ demo OTP
+  localStorage.setItem("demoOTP", "123456");
+
+  // ✅ VERY IMPORTANT
+  localStorage.setItem("loginMobile", m);
+
+  alert("OTP sent (Demo OTP: 123456)");
+  step1.style.display = "none";
+  step2.style.display = "block";
+}
+
+function verifyOTP() {
+  const storedOTP = localStorage.getItem("demoOTP");
+  const storedMobile = localStorage.getItem("loginMobile");
+
+  if (!storedMobile) {
+    alert("Session expired. Please login again.");
+    location.href = "/customer-login.html";
+    return;
+  }
+
+  if (otp.value === storedOTP) {
+    localStorage.setItem("customerLoggedIn", "true");
+
+    // 🔍 Debug (safe to keep)
+    console.log("loginMobile =", storedMobile);
+
+    location.href = "/customer-dashboard.html";
+  } else {
+    alert("Wrong OTP");
+  }
+}
+</script>
+
+</body>
+</html>

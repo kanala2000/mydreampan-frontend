@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agent Login | MyDream PAN</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="form-box">
+  <span class="back" onclick="goBack()">← Back</span>
+
+  <h2>Agent Login</h2>
+
+  <!-- STEP 1 -->
+  <div id="step1">
+    <input id="mobile" placeholder="Mobile Number" maxlength="10">
+    <button onclick="sendOTP()">Send OTP</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" style="display:none;">
+    <input id="otp" placeholder="Enter OTP">
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+</div>
+
+<script>
+/* ================= BACK ================= */
+function goBack(){
+  window.location.href = "/agent-options.html";
+}
+
+/* ================= SEND OTP ================= */
+function sendOTP() {
+  const m = document.getElementById("mobile").value;
+
+  if (m.length !== 10 || isNaN(m)) {
+    alert("Enter valid 10-digit mobile number");
+    return;
+  }
+
+  // DEMO OTP
+  localStorage.setItem("agentOTP", "123456");
+  localStorage.setItem("agentMobile", m);
+
+  alert("OTP sent (Demo OTP: 123456)");
+
+  document.getElementById("step1").style.display = "none";
+  document.getElementById("step2").style.display = "block";
+}
+
+/* ================= VERIFY OTP ================= */
+function verifyOTP() {
+  const otp = document.getElementById("otp").value;
+
+  if (otp === localStorage.getItem("agentOTP")) {
+
+    // LOGIN SUCCESS
+    localStorage.setItem("agentLoggedIn", "true");
+
+    // redirect logic
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+
+    if (next === "request") {
+      window.location.href = "/agent-request.html";
+    } else {
+      window.location.href = "/agent-dashboard.html";
+    }
+
+  } else {
+    alert("Invalid OTP");
+  }
+}
+</script>
+
+</body>
+</html>

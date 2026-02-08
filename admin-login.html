@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="form-box">
+  <span class="back" onclick="goBack()">← Back</span>
+
+  <h2>Admin Login</h2>
+
+  <form id="adminLoginForm">
+    <input id="adminId" placeholder="Admin ID" required>
+    <input id="adminPass" type="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+<script>
+  function goBack() {
+    window.location.href = "/index.html";
+  }
+
+  document.getElementById("adminLoginForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    // TEMP credentials
+    const id = document.getElementById("adminId").value;
+    const pass = document.getElementById("adminPass").value;
+
+    if(id === "admin" && pass === "admin123"){
+      localStorage.setItem("adminLoggedIn","true");
+      window.location.href = "/admin-dashboard.html";
+    } else {
+      alert("Invalid Admin Credentials");
+    }
+  });
+</script>
+
+</body>
+</html>

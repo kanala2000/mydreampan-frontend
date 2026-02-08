@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Services | MyDream PAN</title>
+
+  <!-- Common CSS -->
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <!-- Common JS -->
+  <script defer src="/js/main.js"></script>
+
+  <style>
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #6a2dbf;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .service-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .service-box h3 {
+      margin: 0;
+      cursor: pointer;
+      color: #0b1f3a;
+    }
+
+    .sub-services {
+      display: none;
+      margin-top: 15px;
+    }
+
+    .sub-services button,
+    .service-box a {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #f1f4ff;
+      font-size: 15px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .sub-services button:hover {
+      background: #dfe4ff;
+    }
+
+    footer {
+      margin-top: 60px;
+      background: #0b1f3a;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="navbar">
+  <div class="logo">MY DREAM PAN</div>
+  <nav>
+    <a href="/index.html">Home</a>
+    <a href="/services.html" class="active">Services</a>
+    <a href="/customer-login.html">Customer</a>
+    <a href="/agent-options.html">Agent</a>
+    <a href="/admin-login.html">Admin</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- BACK -->
+  <span class="back-btn" onclick="goBack()">← Back</span>
+
+  <!-- PAN SERVICES -->
+  <div class="service-box">
+    <h3 onclick="togglePan()">▶ PAN Services</h3>
+
+    <div class="sub-services" id="panServices">
+      <button onclick="openService('pan-new.html')">
+        New PAN Application
+      </button>
+
+      <button onclick="openService('pan-correction.html')">
+        PAN Correction
+      </button>
+
+      <button onclick="openService('pan-minor.html')">
+        Minor PAN
+      </button>
+    </div>
+  </div>
+
+  <!-- AADHAAR -->
+  <div class="service-box">
+    <a href="https://tathya.uidai.gov.in/access/login?role=resident" target="_blank">
+      Aadhaar Services
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 MyDream PAN |
+  <a href="/privacy.html">Privacy Policy</a>
+</footer>
+
+<script>
+  function togglePan() {
+    const box = document.getElementById("panServices");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+  }
+
+  // CUSTOMER LOGIN MANDATORY FOR PAN SERVICES
+  function openService(page) {
+    const loggedIn = localStorage.getItem("customerLoggedIn");
+
+    if (!loggedIn) {
+      alert("Please login as Customer to continue");
+      window.location.href = "/customer-login.html";
+      return;
+    }
+
+    window.location.href = "/" + page;
+  }
+
+  function goBack() {
+    // FIXED BACK (no infinite loop)
+    window.location.href = "/index.html";
+  }
+</script>
+
+</body>
+</html>

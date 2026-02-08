@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agent Dashboard | MyDream PAN</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="form-box">
+  <span class="back" onclick="logout()">← Logout</span>
+
+  <h2>Agent Dashboard</h2>
+
+  <div id="statusBox">Loading...</div>
+</div>
+
+<script>
+/* ================= LOGIN CHECK ================= */
+if (!localStorage.getItem("agentLoggedIn")) {
+  alert("Agent login required");
+  window.location.href = "/agent-login.html";
+}
+
+const mobile = localStorage.getItem("agentMobile");
+
+/* ================= LOAD AGENT STATUS ================= */
+async function loadAgentStatus() {
+  try {
+    const res = await fetch(`/api/agent/status/${mobile}`);
+    const data = await res.json();
+
+    const box = document.getElementById("statusBox");
+
+    if (!data || !data.status) {
+      box.innerHTML = `
+        <p><b>Status:</b> Not Requested</p>
+        <p>Please submit Agent ID request first.</p>
+      `;
+      return;
+    }
+
+    if (data.status === "Pending") {
+      box.innerHTML = `
+        <p><b>Status:</b> Pending Approval</p>
+        <p>Your request is under review.</p>
+      `;
+      return;
+    }
+
+    if (data.status === "Approved") {
+      box.innerHTML = `
+        <p><b>Status:</b> Approved ✅</p>
+        <p><b>Agent ID:</b> ${data.agentID}</p>
+        <p><b>Password:</b> ${data.password}</p>
+        <p style="color:green;font-weight:bold;">
+          Use this ID to login in PAN Support app
+        </p>
+      `;
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load agent status");
+  }
+}
+
+loadAgentStatus();
+
+/* ================= LOGOUT ================= */
+function logout() {
+  localStorage.removeItem("agentLoggedIn");
+  localStorage.removeItem("agentMobile");
+  window.location.href = "/agent-login.html";
+}
+</script>
+
+</body>
+</html>
