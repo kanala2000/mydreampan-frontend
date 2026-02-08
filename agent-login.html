@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Agent Login | MyDream PAN</title>
-  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- ✅ CORRECT CSS PATH FOR GITHUB PAGES -->
+  <link rel="stylesheet" href="/mydreampan-frontend/css/style.css">
 </head>
 <body>
 
@@ -24,10 +27,13 @@
   </div>
 </div>
 
+<!-- ✅ CORRECT JS PATH -->
+<script src="/mydreampan-frontend/js/main.js"></script>
+
 <script>
 /* ================= BACK ================= */
 function goBack(){
-  window.location.href = "/agent-options.html";
+  window.location.href = "/mydreampan-frontend/agent-options.html";
 }
 
 /* ================= SEND OTP ================= */
@@ -55,17 +61,15 @@ function verifyOTP() {
 
   if (otp === localStorage.getItem("agentOTP")) {
 
-    // LOGIN SUCCESS
     localStorage.setItem("agentLoggedIn", "true");
 
-    // redirect logic
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next");
 
     if (next === "request") {
-      window.location.href = "/agent-request.html";
+      window.location.href = "/mydreampan-frontend/agent-request.html";
     } else {
-      window.location.href = "/agent-dashboard.html";
+      window.location.href = "/mydreampan-frontend/agent-dashboard.html";
     }
 
   } else {
