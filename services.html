@@ -10,7 +10,42 @@
   <!-- Common JS -->
   <script defer src="/js/main.js"></script>
 
+  <!-- ✅ ADDED: NAVBAR FIX (ONLY ADD) -->
   <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+    }
+
+    /* ===== NAVBAR FIX ===== */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0b1f3a;
+      padding: 14px 30px;
+    }
+
+    .navbar .logo {
+      color: #fff;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .navbar nav a {
+      color: #fff;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .navbar nav a.active,
+    .navbar nav a:hover {
+      text-decoration: underline;
+    }
+    /* ===== END NAVBAR FIX ===== */
+
     .container {
       max-width: 900px;
       margin: 30px auto;
@@ -149,7 +184,6 @@
   }
 
   function goBack() {
-    // FIXED BACK (no infinite loop)
     window.location.href = "/index.html";
   }
 </script>
