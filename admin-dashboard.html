@@ -5,6 +5,13 @@
   <title>Admin Dashboard | MyDream PAN</title>
 
   <link rel="stylesheet" href="/css/style.css" />
+  <script>
+  // ADMIN ROUTE PROTECTION
+  if (!localStorage.getItem("adminLoggedIn")) {
+    alert("Please login as Admin");
+    window.location.href = "/admin-login.html";
+  }
+</script>
 
   <style>
     body {

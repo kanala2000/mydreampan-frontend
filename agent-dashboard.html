@@ -3,6 +3,15 @@
 <head>
   <title>Agent Dashboard | MyDream PAN</title>
   <link rel="stylesheet" href="/css/style.css">
+
+  <script>
+  // AGENT ROUTE PROTECTION
+  if (!localStorage.getItem("agentLoggedIn")) {
+    alert("Please login as Agent");
+    window.location.href = "/agent-login.html";
+  }
+</script>
+
 </head>
 <body>
 
