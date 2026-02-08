@@ -1,66 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Customer Login</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title>Customer Login | MyDream PAN</title>
+
+  <!-- ✅ GitHub Pages compatible path -->
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="form-box">
-  <span class="back" onclick="location.href='/'">← Back</span>
+  <!-- ✅ back to index -->
+  <span class="back" onclick="location.href='index.html'">← Back</span>
 
   <h2>Customer Login</h2>
 
+  <!-- STEP 1 -->
   <div id="step1">
-    <input id="mobile" placeholder="Mobile Number">
+    <input id="mobile" placeholder="Mobile Number" maxlength="10">
     <button onclick="sendOTP()">Send OTP</button>
   </div>
 
+  <!-- STEP 2 -->
   <div id="step2" style="display:none;">
     <input id="otp" placeholder="Enter OTP">
-    <button onclick="verifyOTP()">Verify</button>
+    <button onclick="verifyOTP()">Verify OTP</button>
   </div>
 </div>
 
 <script>
+/* ================= SEND OTP ================= */
 function sendOTP() {
-  const m = mobile.value.trim();
+  const m = document.getElementById("mobile").value.trim();
 
-  if (m.length !== 10) {
-    alert("Invalid mobile number");
+  if (m.length !== 10 || isNaN(m)) {
+    alert("Enter valid 10-digit mobile number");
     return;
   }
 
-  // ✅ demo OTP
-  localStorage.setItem("demoOTP", "123456");
-
-  // ✅ VERY IMPORTANT
-  localStorage.setItem("loginMobile", m);
+  // ✅ Demo OTP
+  localStorage.setItem("customerOTP", "123456");
+  localStorage.setItem("customerMobile", m);
 
   alert("OTP sent (Demo OTP: 123456)");
-  step1.style.display = "none";
-  step2.style.display = "block";
+
+  document.getElementById("step1").style.display = "none";
+  document.getElementById("step2").style.display = "block";
 }
 
+/* ================= VERIFY OTP ================= */
 function verifyOTP() {
-  const storedOTP = localStorage.getItem("demoOTP");
-  const storedMobile = localStorage.getItem("loginMobile");
+  const otp = document.getElementById("otp").value;
+  const savedOTP = localStorage.getItem("customerOTP");
+  const savedMobile = localStorage.getItem("customerMobile");
 
-  if (!storedMobile) {
-    alert("Session expired. Please login again.");
-    location.href = "/customer-login.html";
+  if (!savedMobile) {
+    alert("Session expired. Login again.");
+    location.href = "customer-login.html";
     return;
   }
 
-  if (otp.value === storedOTP) {
+  if (otp === savedOTP) {
     localStorage.setItem("customerLoggedIn", "true");
 
-    // 🔍 Debug (safe to keep)
-    console.log("loginMobile =", storedMobile);
-
-    location.href = "/customer-dashboard.html";
+    // redirect to dashboard
+    location.href = "customer-dashboard.html";
   } else {
-    alert("Wrong OTP");
+    alert("Invalid OTP");
   }
 }
 </script>
